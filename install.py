@@ -18,6 +18,7 @@ class CSVInstaller(ExtensionInstaller):
             process_services='user.csv.CSV',
             config={
                 'CSV': {
-                    'filename': '/var/tmp/data.csv'}},
+                    'filename_loop': '/var/tmp/data_loop.csv',
+                    'filename_archive': '/var/tmp/data_archive.csv'}},
             files=[('bin/user', ['bin/user/csv.py'])]
             )

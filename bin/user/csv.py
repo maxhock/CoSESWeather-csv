@@ -30,7 +30,9 @@ class CSV(weewx.engine.StdService):
         loginf("service version is %s" % VERSION)
         d = config_dict.get('CSV', {})
         # location of the output file
-        self.filename = d.get('filename', '/var/tmp/data.csv')
+        self.filename_loop = d.get('filename_loop', '/var/tmp/data_loop.csv')
+        # location of the output file
+        self.filename_archive = d.get('filename_archive', '/var/tmp/data_archive.csv')
         # optionally emit a header line as the first line of the file
         self.emit_header = weeutil.weeutil.to_bool(d.get('header', True))
         # mode can be append or overwrite
@@ -43,20 +45,23 @@ class CSV(weewx.engine.StdService):
         self.timestamp_format = d.get('timestamp_format')
         # bind to either loop or archive events
         self.binding = d.get('binding', 'loop')
-        if self.binding == 'loop':
-            self.bind(weewx.NEW_LOOP_PACKET, self.handle_new_loop)
-        else:
-            self.bind(weewx.NEW_ARCHIVE_RECORD, self.handle_new_archive)
+        # if self.binding == 'loop':
+        self.bind(weewx.NEW_LOOP_PACKET, self.handle_new_loop)
+        # else:
+        self.bind(weewx.NEW_ARCHIVE_RECORD, self.handle_new_archive)
 
     def handle_new_loop(self, event):
-        self.write_data(event.packet)
+        self.write_data(event.packet, "loop")
 
     def handle_new_archive(self, event):
-        self.write_data(event.record)
+        self.write_data(event.record, "archive")
 
-    def write_data(self, data):
+    def write_data(self, data, binding):
         flag = "a" if self.mode == 'append' else "w"
-        filename = self.filename
+        if binding == "loop":
+            filename = self.filename_loop
+        else:
+            filename = self.filename_archive
         if self.append_datestamp:
             basename = filename
             ext = ''
