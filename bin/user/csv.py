@@ -9,6 +9,7 @@ import syslog
 import weewx
 import weewx.engine
 import weeutil.weeutil
+import schemas.wview
 
 VERSION = "0.10"
 
@@ -73,6 +74,10 @@ class CSV(weewx.engine.StdService):
                                  time.gmtime(data['dateTime']))
             filename = "%s-%s%s" % (basename, tstr, ext)
         header = None
+        # expand data dict to always write all possible entries, defined in /bin/schema/wview.py 
+        for key in dict(schemas.wview.schema):
+            data.setdefault(key)
+        # adds name of stored variables in header
         if self.emit_header and (
             not os.path.exists(filename) or flag == "w"):
             header = '# %s\n' % ','.join(self.sort_keys(data))
