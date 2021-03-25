@@ -18,7 +18,10 @@ class CSVInstaller(ExtensionInstaller):
             process_services='user.csv.CSV',
             config={
                 'CSV': {
-                    'filename_loop': '/var/tmp/data_loop.csv',
-                    'filename_archive': '/var/tmp/data_archive.csv'}},
+                    'filename_loop' : '/mnt/nas/data_loop.csv',
+                    'keys_loop' : 'dateTime, usUnits, interval, outTemp, windSpeed, windGust, windchill, radiation, radiationDiff, sun, radiation1, radiation2, radiation3',
+                    'filename_archive' : '/mnt/nas/data_archive.csv',
+                    'keys_archive' : 'id, temp, wind, spn1_radTot, spn1_radDiff, spn1_sun, rad_cmp1, rad_cmp2, rad_cmp3, t_unix',
+                    'timestamp_format':'%Y-%m-dT%H:%M:%S%z'}},
             files=[('bin/user', ['bin/user/csv.py'])]
             )

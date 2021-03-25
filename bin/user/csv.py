@@ -44,11 +44,12 @@ class CSV(weewx.engine.StdService):
         self.datestamp_format = d.get('datestamp_format', '%Y-%m')
         # format for the per-record timestamp
         self.timestamp_format = d.get('timestamp_format')
-        # bind to either loop or archive events
-        self.binding = d.get('binding', 'loop')
-        # if self.binding == 'loop':
+        # list of archive columns to write
+        self.keys_archive = d.get('keys_archive')
+        # list of loop columns to write
+        self.keys_loop = d.get('keys_loop')
+        # bind to loop and archive events
         self.bind(weewx.NEW_LOOP_PACKET, self.handle_new_loop)
-        # else:
         self.bind(weewx.NEW_ARCHIVE_RECORD, self.handle_new_archive)
 
     def handle_new_loop(self, event):
@@ -61,8 +62,10 @@ class CSV(weewx.engine.StdService):
         flag = "a" if self.mode == 'append' else "w"
         if binding == "loop":
             filename = self.filename_loop
+            keys = self.keys_loop
         else:
             filename = self.filename_archive
+            keys = self.keys_archive
         if self.append_datestamp:
             basename = filename
             ext = ''
@@ -74,9 +77,11 @@ class CSV(weewx.engine.StdService):
                                  time.gmtime(data['dateTime']))
             filename = "%s-%s%s" % (basename, tstr, ext)
         header = None
-        # expand data dict to always write all possible entries, defined in /bin/schema/wview.py 
-        for key in dict(schemas.wview.schema):
+        # expand data dict to always write all possible entries, defined config
+        for key in keys:
             data.setdefault(key)
+        # add local time in ISO 8601 format
+        data['localtime'] = time.strftime("%Y-%m-dT%H:%M:%S%z",time.localtime(data['dateTime']))
         # adds name of stored variables in header
         if self.emit_header and (
             not os.path.exists(filename) or flag == "w"):
