@@ -1,5 +1,6 @@
-# $Id: csv.py 1766 2017-10-17 13:53:41Z mwall $
-# Copyright 2015 Matthew Wall
+# $Id: csv.py 1766 2017-10-17 13:53:41Z mhock $
+# Copyright 2021 Maximilian Hock
+# Original code by Matthew Wall
 
 import os
 import os.path
@@ -11,7 +12,7 @@ import weewx.engine
 import weeutil.weeutil
 import schemas.wview
 
-VERSION = "1.2.0"
+VERSION = "1.2.2"
 
 def logmsg(level, msg):
     syslog.syslog(level, 'csv: %s' % msg)
@@ -41,21 +42,23 @@ class CSV(weewx.engine.StdService):
 
         # loop
         # location of the output file
-        self.filename_loop = d.get('loop').get('filename', '/var/tmp/data_loop.csv')
+        loop = d.get('loop')
+        self.filename_loop = loop.get('filename', '/var/tmp/data_loop.csv')
         # format for the loop filename datestamp
-        self.datestamp_format_loop = d.get('loop').get('datestamp_format', '%Y-%m-%d')
+        self.datestamp_format_loop = loop.get('datestamp_format', '%Y-%m-%d')
         # list of loop columns to write
-        self.keys_loop = d.get('loop').get('keys')
+        self.keys_loop = loop.get('keys').split(",")
         # bind to loop events
         self.bind(weewx.NEW_LOOP_PACKET, self.handle_new_loop)
 
         # archive
         # location of the output file
-        self.filename_archive = d.get('archive').get('filename', '/var/tmp/data_archive.csv')
+        archive = d.get('archive')
+        self.filename_archive = archive.get('filename', '/var/tmp/data_archive.csv')
         # format for the archive filename datestamp
-        self.datestamp_format_archive = d.get('archive').get('datestamp_format', '%Y-%m')
+        self.datestamp_format_archive = archive.get('datestamp_format', '%Y-%m')
         # list of archive columns to write
-        self.keys_archive = d.get('archive').get('keys')
+        self.keys_archive = archive.get('keys').split(",")
         # bind to archive events
         self.bind(weewx.NEW_ARCHIVE_RECORD, self.handle_new_archive)
 
@@ -75,6 +78,7 @@ class CSV(weewx.engine.StdService):
             filename = self.filename_archive
             keys = self.keys_archive
             datestamp_format = self.datestamp_format_archive
+        
         if self.append_datestamp:
             basename = filename
             ext = ''
@@ -90,7 +94,7 @@ class CSV(weewx.engine.StdService):
         for key in keys:
             data.setdefault(key)
         # add local time in ISO 8601 format
-        data['localtime'] = time.strftime("%Y-%m-dT%H:%M:%S%z",time.localtime(data['dateTime']))
+        #data['localtime'] = time.strftime("%Y-%m-dT%H:%M:%S%z",time.localtime(data['dateTime']))
         # adds name of stored variables in header
         if self.emit_header and (
             not os.path.exists(filename) or flag == "w"):

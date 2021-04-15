@@ -1,3 +1,7 @@
+1.2.2 15apr2021
+* changed versioning to semver
+* changed to support loop and archive packages
+
 0.10 17oct2017
 * fixed dtstr typo
 

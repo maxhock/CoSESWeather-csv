@@ -1,6 +1,7 @@
-# $Id: install.py 1766 2017-10-17 13:53:41Z mwall $
+# $Id: install.py 1766 2017-10-17 13:53:41Z mhock $
 # installer for csvwriter
-# Copyright 2015 Matthew Wall
+# Copyright 2021 Maximilian Hock
+# Original code by Matthew Wall
 
 from setup import ExtensionInstaller
 
@@ -10,11 +11,11 @@ def loader():
 class CSVInstaller(ExtensionInstaller):
     def __init__(self):
         super(CSVInstaller, self).__init__(
-            version="0.10",
+            version="1.2.2",
             name='csv',
-            description='Emit loop or archive data in CSV format.',
-            author="Matthew Wall",
-            author_email="mwall@users.sourceforge.net",
+            description='Emit loop and archive data in CSV format.',
+            author="Maximilian Hock",
+            author_email="max.hock@tum.de",
             process_services='user.csv.CSV',
             config={
                 'CSV': {
