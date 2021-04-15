@@ -10,6 +10,7 @@ import weewx
 import weewx.engine
 import weeutil.weeutil
 import schemas.wview
+import weedb.mysql
 
 VERSION = "0.10"
 
@@ -30,26 +31,33 @@ class CSV(weewx.engine.StdService):
         super(CSV, self).__init__(engine, config_dict)
         loginf("service version is %s" % VERSION)
         d = config_dict.get('CSV', {})
-        # location of the output file
-        self.filename_loop = d.get('filename_loop', '/var/tmp/data_loop.csv')
-        # location of the output file
-        self.filename_archive = d.get('filename_archive', '/var/tmp/data_archive.csv')
         # optionally emit a header line as the first line of the file
         self.emit_header = weeutil.weeutil.to_bool(d.get('header', True))
         # mode can be append or overwrite
         self.mode = d.get('mode', 'append')
         # optionally append a datestamp to the filename
         self.append_datestamp = weeutil.weeutil.to_bool(d.get('append_datestamp', True))
-        # format for the filename datestamp
-        self.datestamp_format = d.get('datestamp_format', '%Y-%m')
         # format for the per-record timestamp
         self.timestamp_format = d.get('timestamp_format')
-        # list of archive columns to write
-        self.keys_archive = d.get('keys_archive')
+
+        # loop
+        # location of the output file
+        self.filename_loop = d.get('loop','filename', '/var/tmp/data_loop.csv')
+        # format for the loop filename datestamp
+        self.datestamp_format_loop = d.get('loop','datestamp_format', '%Y-%m-%d')
         # list of loop columns to write
-        self.keys_loop = d.get('keys_loop')
-        # bind to loop and archive events
+        self.keys_loop = d.get('loop','keys')
+        # bind to loop events
         self.bind(weewx.NEW_LOOP_PACKET, self.handle_new_loop)
+        
+        # archive
+        # location of the output file
+        self.filename_archive = d.get('archive','filename', '/var/tmp/data_archive.csv')
+        # format for the archive filename datestamp
+        self.datestamp_format_archive = d.get('archive','datestamp_format', '%Y-%m')
+        # list of archive columns to write
+        self.keys_archive = d.get('archive','keys')
+        # bind to archive events
         self.bind(weewx.NEW_ARCHIVE_RECORD, self.handle_new_archive)
 
     def handle_new_loop(self, event):
@@ -63,9 +71,11 @@ class CSV(weewx.engine.StdService):
         if binding == "loop":
             filename = self.filename_loop
             keys = self.keys_loop
+            datestamp_format = self.datestamp_format_loop
         else:
             filename = self.filename_archive
             keys = self.keys_archive
+            datestamp_format = self.datestamp_format_archive
         if self.append_datestamp:
             basename = filename
             ext = ''
@@ -73,7 +83,7 @@ class CSV(weewx.engine.StdService):
             if idx > -1:
                 basename = filename[:idx]
                 ext = filename[idx:]
-            tstr = time.strftime(self.datestamp_format,
+            tstr = time.strftime(datestamp_format,
                                  time.gmtime(data['dateTime']))
             filename = "%s-%s%s" % (basename, tstr, ext)
         header = None
