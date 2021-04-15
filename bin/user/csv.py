@@ -10,9 +10,8 @@ import weewx
 import weewx.engine
 import weeutil.weeutil
 import schemas.wview
-import weedb.mysql
 
-VERSION = "0.10"
+VERSION = "1.2.0"
 
 def logmsg(level, msg):
     syslog.syslog(level, 'csv: %s' % msg)
@@ -42,21 +41,21 @@ class CSV(weewx.engine.StdService):
 
         # loop
         # location of the output file
-        self.filename_loop = d.get('loop','filename', '/var/tmp/data_loop.csv')
+        self.filename_loop = d.get('loop').get('filename', '/var/tmp/data_loop.csv')
         # format for the loop filename datestamp
-        self.datestamp_format_loop = d.get('loop','datestamp_format', '%Y-%m-%d')
+        self.datestamp_format_loop = d.get('loop').get('datestamp_format', '%Y-%m-%d')
         # list of loop columns to write
-        self.keys_loop = d.get('loop','keys')
+        self.keys_loop = d.get('loop').get('keys')
         # bind to loop events
         self.bind(weewx.NEW_LOOP_PACKET, self.handle_new_loop)
-        
+
         # archive
         # location of the output file
-        self.filename_archive = d.get('archive','filename', '/var/tmp/data_archive.csv')
+        self.filename_archive = d.get('archive').get('filename', '/var/tmp/data_archive.csv')
         # format for the archive filename datestamp
-        self.datestamp_format_archive = d.get('archive','datestamp_format', '%Y-%m')
+        self.datestamp_format_archive = d.get('archive').get('datestamp_format', '%Y-%m')
         # list of archive columns to write
-        self.keys_archive = d.get('archive','keys')
+        self.keys_archive = d.get('archive').get('keys')
         # bind to archive events
         self.bind(weewx.NEW_ARCHIVE_RECORD, self.handle_new_archive)
 
