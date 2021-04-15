@@ -1,3 +1,7 @@
+1.2.3 15apr2021
+* swapped key list of archive
+* added localtime calculation
+
 1.2.2 15apr2021
 * changed versioning to semver
 * changed to support loop and archive packages

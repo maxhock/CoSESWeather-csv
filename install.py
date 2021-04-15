@@ -11,7 +11,7 @@ def loader():
 class CSVInstaller(ExtensionInstaller):
     def __init__(self):
         super(CSVInstaller, self).__init__(
-            version="1.2.2",
+            version="1.2.3",
             name='csv',
             description='Emit loop and archive data in CSV format.',
             author="Maximilian Hock",
@@ -22,12 +22,12 @@ class CSVInstaller(ExtensionInstaller):
                     'timestamp_format':'%Y-%m-dT%H:%M:%S%z',
                     'loop' : {
                         'filename' : '/mnt/nas/data_loop.csv',
-                        'keys' : 'dateTime, usUnits, interval, outTemp, windSpeed, windGust, windchill, radiation, radiationDiff, sun, radiation1, radiation2, radiation3',
+                        'keys' : 'dateTime,usUnits,interval,outTemp,windSpeed,windGust,windchill,radiation,radiationDiff,sun,radiation1,radiation2,radiation3',
                         'datestamp_format' : '%Y-%m-%d',
                     },
                     'archive': {
                         'filename' : '/mnt/nas/data_archive.csv',
-                        'keys' : 'id, temp, wind, spn1_radTot, spn1_radDiff, spn1_sun, rad_cmp1, rad_cmp2, rad_cmp3, t_unix',
+                        'keys' : 'dateTime,usUnits,interval,outTemp,windSpeed,windGust,windchill,radiation,radiationDiff,sun,radiation1,radiation2,radiation3',
                         'datestamp_format' : '%Y-%m',
               	    }
                 }

@@ -12,7 +12,7 @@ import weewx.engine
 import weeutil.weeutil
 import schemas.wview
 
-VERSION = "1.2.2"
+VERSION = "1.2.3"
 
 def logmsg(level, msg):
     syslog.syslog(level, 'csv: %s' % msg)
@@ -106,8 +106,9 @@ class CSV(weewx.engine.StdService):
 
     def sort_keys(self, record):
         fields = ['dateTime']
+        fields.append('localtime')
         for k in sorted(record):
-            if k != 'dateTime':
+            if k != 'dateTime' and k != 'localtime':
                 fields.append(k)
         return fields
 
@@ -117,7 +118,12 @@ class CSV(weewx.engine.StdService):
             tstr = time.strftime(self.timestamp_format,
                                  time.gmtime(record['dateTime']))
         fields = [tstr]
+        ltstr = str(None)
+        if self.timestamp_format is not None:
+            ltstr = time.strftime(self.timestamp_format,
+                                 time.localtime(record['dateTime']))
+        fields.append(ltstr)
         for k in sorted(record):
-            if k != 'dateTime':
+            if k != 'dateTime' and k != 'localtime':
                 fields.append(str(record[k]))
         return fields
