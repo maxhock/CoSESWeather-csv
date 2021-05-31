@@ -1,4 +1,4 @@
-csv - emit loop or archive data in comma-separated-value format
+csv - emit loop and archive data in comma-separated-value format
 Copyright 2021 Maximilian Hock
 Original code by Matthew Wall
 
