@@ -1,5 +1,6 @@
 csv - emit loop or archive data in comma-separated-value format
 Copyright 2021 Maximilian Hock
+Original code by Matthew Wall
 
 Installation instructions:
 
