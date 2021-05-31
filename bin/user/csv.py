@@ -70,6 +70,7 @@ class CSV(weewx.engine.StdService):
 
     def write_data(self, data, binding):
         flag = "a" if self.mode == 'append' else "w"
+        # copy configs for either loop or archive
         if binding == "loop":
             filename = self.filename_loop
             keys = self.keys_loop
@@ -79,6 +80,7 @@ class CSV(weewx.engine.StdService):
             keys = self.keys_archive
             datestamp_format = self.datestamp_format_archive
         
+        # add datestamp
         if self.append_datestamp:
             basename = filename
             ext = ''
@@ -90,7 +92,7 @@ class CSV(weewx.engine.StdService):
                                  time.gmtime(data['dateTime']))
             filename = "%s-%s%s" % (basename, tstr, ext)
         header = None
-        # expand data dict to always write all possible entries, defined config
+        # expand data dict to always write all possible entries, defined in config
         for key in keys:
             data.setdefault(key)
         # add local time in ISO 8601 format
@@ -103,15 +105,19 @@ class CSV(weewx.engine.StdService):
             if header:
                 f.write(header)
             f.write('%s\n' % ','.join(self.sort_data(data)))
-
+    
+    # sort keys and append time keys
     def sort_keys(self, record):
         fields = ['dateTime']
         fields.append('localtime')
+        fields.append('epochTime')
         for k in sorted(record):
-            if k != 'dateTime' and k != 'localtime':
+            if k != 'dateTime' and k != 'localtime' and k != 'epochTime':
                 fields.append(k)
         return fields
 
+    # change dateTime from epoch to timestamp format, add local time and epoch.
+    # sort all entries
     def sort_data(self, record):
         tstr = str(record['dateTime'])
         if self.timestamp_format is not None:
@@ -123,7 +129,11 @@ class CSV(weewx.engine.StdService):
             ltstr = time.strftime(self.timestamp_format,
                                  time.localtime(record['dateTime']))
         fields.append(ltstr)
+        etstr = str(None)
+        if self.timestamp_format is not None:
+            etstr = record['dateTime']
+        fields.append(etstr)
         for k in sorted(record):
-            if k != 'dateTime' and k != 'localtime':
+            if k != 'dateTime' and k != 'localtime' and k != 'epochTime':
                 fields.append(str(record[k]))
         return fields
