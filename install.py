@@ -19,7 +19,7 @@ class CSVInstaller(ExtensionInstaller):
             process_services='user.csv.CSV',
             config={
                 'CSV': {
-                    'timestamp_format':'%Y-%m-dT%H:%M:%S%z',
+                    'timestamp_format':'%Y-%m-%dT%H:%M:%S%z',
                     'loop' : {
                         'filename' : '/mnt/nas/data_loop.csv',
                         'keys' : 'dateTime,usUnits,interval,outTemp,windSpeed,windGust,windchill,radiation,radiationDiff,sun,radiation1,radiation2,radiation3',
