@@ -131,7 +131,7 @@ class CSV(weewx.engine.StdService):
         fields.append(ltstr)
         etstr = str(None)
         if self.timestamp_format is not None:
-            etstr = record['dateTime']
+            etstr = str(record['dateTime'])
         fields.append(etstr)
         for k in sorted(record):
             if k != 'dateTime' and k != 'localtime' and k != 'epochTime':

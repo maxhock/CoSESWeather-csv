@@ -1,3 +1,5 @@
+1.3.1 31may2021
+* wrapped epochtime as string
 1.3.0 31may2021
 * added epochtime
 
